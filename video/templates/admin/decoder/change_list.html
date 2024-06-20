@@ -1,0 +1,26 @@
+{% extends "admin/change_list.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .clipboard-btn {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+</style>
+<script type="text/javascript">
+    function copyToClipboard(event, text) {
+        event.preventDefault();
+        const el = document.createElement("textarea");
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        alert("Copied to clipboard");
+    }
+</script>
+{% endblock %}

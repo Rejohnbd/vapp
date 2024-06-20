@@ -1,7 +1,7 @@
 #Python version: 3.8.18
 asgiref==3.8.1
 backports.zoneinfo==0.2.1
-certifi==2024.6.2        
+certifi==2024.6.2
 chardet==3.0.4
 charset-normalizer==3.3.2
 colorama==0.4.6

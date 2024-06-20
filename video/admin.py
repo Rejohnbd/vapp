@@ -1,33 +1,45 @@
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import VideoDecode, VideoUpload
 import os
 import speech_recognition as sr
 from moviepy.editor import VideoFileClip
 from googletrans import Translator
 
-from django.contrib import admin
-from . models import VideoDecode, VideoUpload
-
-# Register your models here.
 @admin.register(VideoUpload)
 class VideoUploadAdmin(admin.ModelAdmin):
     list_display = ('title', 'created_at')
 
 @admin.register(VideoDecode)
 class VideoDecodeAdmin(admin.ModelAdmin):
-    list_display = ('video_file', 'short_code', 'original_text', 'converted_text')
+    list_display = ('video_file', 'short_code', 'display_original_text', 'display_converted_text')
     fields = ('video_file', 'short_code')
+    change_list_template = "admin/decoder/change_list.html"
+
+    def display_original_text(self, obj):
+        return format_html(
+            '<div>{text} <button class="clipboard-btn" onclick="copyToClipboard(event, \'{text}\')">Copy</button></div>',
+            text=obj.original_text
+        )
+    display_original_text.short_description = 'Original Text'
+
+    def display_converted_text(self, obj):
+        return format_html(
+            '<div>{text} <button class="clipboard-btn" onclick="copyToClipboard(event, \'{text}\')">Copy</button></div>',
+            text=obj.converted_text
+        )
+    display_converted_text.short_description = 'Converted Text'
 
     def save_model(self, request, obj, form, change):
         video_upload_instance = obj.video_file
         video_path = video_upload_instance.files.path
-        
+
         original_text = transcribe_video(video_path)
         if original_text:
             obj.original_text = original_text
             obj.converted_text = translate_text(original_text, obj.short_code)
 
         super().save_model(request, obj, form, change)
-
-
 
 def transcribe_video(video_path):
     recognizer = sr.Recognizer()
@@ -39,7 +51,7 @@ def transcribe_video(video_path):
     except Exception as e:
         print("Error extracting audio:", e)
         return None
-    
+
     with sr.AudioFile(audio_path) as source:
         audio_data = recognizer.record(source)
 
