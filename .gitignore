@@ -1,2 +1,5 @@
 core/__pycache__
+video/__pycache__
+video/migrations/__pycache__
+uploads/*
 db.sqlite3
